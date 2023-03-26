@@ -13,5 +13,5 @@ jobs:
         with:
           token: ${{ secrets.ATOKEN }}
           owner: manami-project
-          base: synctest
+          base: master
           head: master
