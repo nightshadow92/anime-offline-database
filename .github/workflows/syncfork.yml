@@ -12,5 +12,5 @@ jobs:
       - uses: tgymnich/fork-sync@v1.8
         with:
           owner: manami-project
-          base: master
+          base: synctest
           head: master
