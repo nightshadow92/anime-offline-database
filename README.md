@@ -1,4 +1,4 @@
-This is a fork of [manami-project/anime-offline-database](https://github.com/manami-project/anime-offline-database). It is kep up to date with [wei/pull](https://github.com/wei/pull).
+This is a fork of [manami-project/anime-offline-database](https://github.com/manami-project/anime-offline-database). It is kept up to date with [wei/pull](https://github.com/wei/pull).
 
 
 The data is exactly the same, but a [release](https://github.com/nightshadow92/anime-offline-database/releases/latest) is automatically generated on updates.
