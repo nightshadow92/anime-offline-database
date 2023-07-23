@@ -1,6 +1,12 @@
 version: "1"
 rules:
   - base: master
-    upstream: manami-project:master    # change `wei` to the owner of upstream repo
+    upstream: manami-project:master
     mergeMethod: merge
     mergeUnstable: true
+    assignees:
+      - nightshadow92
+    reviewers:
+      - nightshadow92
+    conflictReviewers:
+      - nightshadow92
