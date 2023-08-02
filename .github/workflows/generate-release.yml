@@ -1,0 +1,175 @@
+name: Release v2
+on: [workflow_dispatch,pull_request,push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create truncated Json
+        shell: pwsh
+        run: |
+          $json = get-content ./anime-offline-database-minified.json | ConvertFrom-Json
+          $json.data = $json.data | where {$_.animeseason.year -gt 2020 -or $_.status -notmatch "FINISHED"}
+          $json | ConvertTo-Json -Compress -Depth 10 | Out-File anime-offline-database-truncated-minified.json
+          $json = get-content ./anime-offline-database.json | ConvertFrom-Json
+          $json.data = $json.data | where {$_.animeseason.year -gt 2020 -or $_.status -notmatch "FINISHED"}
+          $json | ConvertTo-Json -Depth 10 | Out-File anime-offline-database-truncated.json
+          
+      - name: create 7z files
+        run: |
+          7z a -t7z -mx=9 anime-offline-database-minified.json.7z ./anime-offline-database-minified.json
+          7z a -t7z -mx=9 anime-offline-database.json.7z ./anime-offline-database.json
+          7z a -t7z -mx=9 dead-entries.7z ./dead-entries
+          7z a -t7z -mx=9 All.json.7z *.json
+          7z a -t7z -mx=9 anime-offline-database-truncated.json.7z ./anime-offline-database-truncated.json
+          7z a -t7z -mx=9 anime-offline-database-truncated-minified.json.7z ./anime-offline-database-truncated-minified.json
+      - name: Create zip files
+        run: |
+          zip -q -9 anime-offline-database-minified.json.zip ./anime-offline-database-minified.json
+          zip -q -9 anime-offline-database.json.zip ./anime-offline-database.json
+          zip -q -9 dead-entries.zip ./dead-entries
+          zip -q -9 All.json.zip *.json
+          zip -q -9 anime-offline-database-truncated.json.zip ./anime-offline-database-truncated.json
+          zip -q -9 anime-offline-database-truncated-minified.json.zip ./anime-offline-database-truncated-minified.json 
+      - name: Get Time
+        id: time
+        uses: nanzm/get-time-action@v1.1
+        with:
+          format: 'YYYY-MM-DD-HH-mm-ss'          
+      - name: release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          release_name: ${{ steps.time.outputs.time }}
+          body: |
+          tag_name: ${{ steps.time.outputs.time }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}      
+      - name: upload base json
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./anime-offline-database.json
+          asset_name: anime-offline-database.json
+          asset_content_type: application/json
+      - name: upload base minified json
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./anime-offline-database-minified.json
+          asset_name: anime-offline-database-minified.json
+          asset_content_type: application/json
+      - name: upload minified 7z
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./anime-offline-database-minified.json.7z
+          asset_name: anime-offline-database-minified.json.7z
+          asset_content_type: application/x-7z-compressed
+      - name: upload dead-entries 7z
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dead-entries.7z
+          asset_name: dead-entries.7z
+          asset_content_type: application/x-7z-compressed 
+      - name: upload database 7z
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./anime-offline-database.json.7z
+          asset_name: anime-offline-database.json.7z
+          asset_content_type: application/x-7z-compressed
+      - name: upload All 7z
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./All.json.7z
+          asset_name: All.json.7z
+          asset_content_type: application/x-7z-compressed
+      - name: upload truncated 7z
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./anime-offline-database-truncated.json.7z
+          asset_name: anime-offline-database-truncated.json.7z
+          asset_content_type: application/x-7z-compressed
+      - name: upload truncated minified 7z
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./anime-offline-database-truncated-minified.json.7z
+          asset_name: anime-offline-database-truncated-minified.json.7z
+          asset_content_type: application/x-7z-compressed
+      - name: upload minified zip
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./anime-offline-database-minified.json.zip
+          asset_name: anime-offline-database-minified.json.zip
+          asset_content_type: application/zip
+      - name: upload dead-entries zip
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dead-entries.zip
+          asset_name: dead-entries.zip
+          asset_content_type: application/zip
+      - name: upload database zip
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./anime-offline-database.json.zip
+          asset_name: anime-offline-database.json.zip
+          asset_content_type: application/zip
+      - name: upload All zip
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./All.json.zip
+          asset_name: All.json.zip
+          asset_content_type: application/zip
+      - name: upload truncated zip
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./anime-offline-database-truncated.json.zip
+          asset_name: anime-offline-database-truncated.json.zip
+          asset_content_type: application/zip
+      - name: upload truncated minified zip
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./anime-offline-database-truncated-minified.json.zip
+          asset_name: anime-offline-database-truncated-minified.json.zip
+          asset_content_type: application/zip
