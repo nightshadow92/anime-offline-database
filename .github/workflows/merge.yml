@@ -10,7 +10,7 @@ jobs:
           git clone --shallow-since=2023-07-20 https://github.com/nightshadow92/anime-offline-database.git
           cd anime-offline-database
           git checkout -b manami-project-master master
-          git pull --shallow-since=2023-07-20 https://github.com/manami-project/anime-offline-database.git master
+          git pull --shallow-since=2023-07-20 --no-rebase https://github.com/manami-project/anime-offline-database.git master
           git checkout --ours README.md
           git add README.md
           git commit -m "Merge branch 'master' of https://github.com/manami-project/anime-offline-database into manami-project-master"
