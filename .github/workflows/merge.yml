@@ -5,17 +5,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: solve conflict
+      - name: configure git
         run: |
           git config --global user.name 'nightshadow92'
           git config --global user.email 'nightshadow92@users.noreply.github.com'
+      - name: pull fork
+        run: |
           git clone --shallow-since=2023-07-20 https://github.com/nightshadow92/anime-offline-database.git
           cd anime-offline-database
           git checkout -b manami-project-master master
+      - name: pull master
+        run: |
           git pull --shallow-since=2023-07-20 --no-rebase https://github.com/manami-project/anime-offline-database.git master
+      - name: solve conflict in README.md
+        if: always()
+        run: |
           git checkout --ours README.md
           git add README.md
           git commit -m "Merge branch 'master' of https://github.com/manami-project/anime-offline-database into manami-project-master"
+      - name: git push
+        if: always()
+        run: |
           git checkout master
           git merge --no-ff manami-project-master
           git push origin master
