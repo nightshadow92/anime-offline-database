@@ -7,6 +7,8 @@ jobs:
       - uses: actions/checkout@v3
       - name: solve conflict
         run: |
+          git config --global user.name 'nightshadow92'
+          git config --global user.email 'nightshadow92@users.noreply.github.com'
           git clone --shallow-since=2023-07-20 https://github.com/nightshadow92/anime-offline-database.git
           cd anime-offline-database
           git checkout -b manami-project-master master
