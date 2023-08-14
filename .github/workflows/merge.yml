@@ -16,7 +16,7 @@ jobs:
           git checkout -b manami-project-master master
       - name: pull master
         run: |
-          git pull --shallow-since=2023-08-01 --allow-unrelated-histories https://github.com/manami-project/anime-offline-database.git master
+          git pull --shallow-since=2023-08-01 --allow-unrelated-histories --rebase https://github.com/manami-project/anime-offline-database.git master
       - name: solve conflict in README.md
         run: |
           git checkout --ours README.md
