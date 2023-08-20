@@ -8,12 +8,11 @@
 !.github/
 .github/*
 !.github/CONTRIBUTING.md
-!.github/dependabot.yml
+!.github/*.yml
 
 !.github/workflows/
 .github/workflows/*
-!.github/workflows/json_lint.yml
-!.github/workflows/close-pr.yml
+!.github/workflows/*.yml
 
 !.github/ISSUE_TEMPLATE/
 .github/ISSUE_TEMPLATE/*
